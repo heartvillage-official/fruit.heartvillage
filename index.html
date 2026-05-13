@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💗 하트빌리지 온기방 1기 — 입주 체크</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #E8496A; --rose-light: #FFE8EE; --rose-dark: #C0314F;
+    --cream: #FDF8F5; --sand: #F5EDE5; --ink: #2A1F1A;
+    --muted: #8A7B74; --border: #EBE0D8; --white: #FFFFFF;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: radial-gradient(circle at 20% 20%, #FFE8EE 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, #FFF0E8 0%, transparent 50%);
+  }
+  .page { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  .brand { text-align: center; margin-bottom: 2.5rem; }
+  .brand-heart { display: inline-block; width: 56px; height: 56px; background: var(--rose); border-radius: 50%; line-height: 56px; font-size: 26px; margin-bottom: 12px; box-shadow: 0 8px 24px rgba(232,73,106,0.3); }
+  .brand-name { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
+  .brand-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .tab-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 1.5rem; background: var(--sand); padding: 5px; border-radius: 14px; }
+  .tab { padding: 10px 0; border: none; border-radius: 10px; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; background: transparent; color: var(--muted); }
+  .tab.on { background: var(--white); color: var(--rose); box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 24px; overflow: hidden; box-shadow: 0 4px 32px rgba(42,31,26,0.06); }
+  .card-hero { padding: 2rem 1.75rem 1.75rem; background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%); position: relative; overflow: hidden; }
+  .card-hero.post-hero { background: linear-gradient(135deg, #C0314F 0%, #8B1A35 100%); }
+  .card-hero::after { content: '♥'; position: absolute; right: -20px; bottom: -20px; font-size: 120px; color: rgba(255,255,255,0.08); line-height: 1; }
+  .hero-badge { display: inline-block; background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.95); font-size: 11px; letter-spacing: 0.08em; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+  .hero-title { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 600; color: #fff; line-height: 1.45; margin-bottom: 10px; }
+  .hero-desc { font-size: 13.5px; color: rgba(255,255,255,0.82); line-height: 1.7; }
+
+  .card-body { padding: 1.75rem; display: flex; flex-direction: column; gap: 1.75rem; }
+  .sec-label { font-size: 10.5px; font-weight: 500; color: var(--rose); letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--rose-light); }
+
+  .q { display: flex; flex-direction: column; gap: 8px; }
+  .q + .q { margin-top: 1rem; }
+  .q-num { font-size: 11px; font-weight: 500; color: var(--rose); letter-spacing: 0.06em; }
+  .q-text { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.5; }
+  .q-hint { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+  .q-hint.emphasis { color: var(--rose-dark); font-weight: 500; }
+
+  input[type=text], input[type=number], input[type=date], textarea {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 12px;
+    font-family: 'Noto Sans KR', sans-serif; font-size: 14px; color: var(--ink);
+    background: var(--cream); outline: none; transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+  input:focus, textarea:focus { border-color: var(--rose); background: #fff; }
+  textarea { min-height: 80px; resize: vertical; line-height: 1.7; }
+  ::placeholder { color: #C5B8B2; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { padding: 8px 16px; border: 1.5px solid var(--border); border-radius: 30px; background: var(--cream); font-size: 13.5px; color: var(--muted); cursor: pointer; transition: all 0.15s; user-select: none; }
+  .chip:hover { border-color: var(--rose); color: var(--rose); }
+  .chip.on { background: var(--rose-light); border-color: var(--rose); color: var(--rose-dark); font-weight: 500; }
+
+  .radios { display: flex; flex-direction: column; gap: 8px; }
+  .radio-opt { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.15s; font-size: 14px; color: var(--ink); }
+  .radio-opt:hover { border-color: var(--rose); }
+  .radio-opt.on { border-color: var(--rose); background: var(--rose-light); }
+  .radio-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .radio-opt.on .radio-dot { border-color: var(--rose); background: var(--rose); }
+  .radio-dot-in { width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+
+  .sliders { display: flex; flex-direction: column; gap: 14px; }
+  .slider-row { display: grid; grid-template-columns: 110px 1fr 32px; gap: 12px; align-items: center; }
+  .slider-name { font-size: 13.5px; color: var(--muted); }
+  .slider-val { font-size: 14px; font-weight: 500; color: var(--rose); text-align: right; }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; background: var(--border); border-radius: 4px; outline: none; padding: 0; border: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--rose); cursor: pointer; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(232,73,106,0.4); }
+
+  .nps-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .nps-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .nps-btn { width: 46px; height: 46px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--cream); font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .nps-btn:hover { border-color: var(--rose); color: var(--rose); }
+  .nps-btn.on { background: var(--rose); border-color: var(--rose); color: #fff; }
+  .nps-labels { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); }
+
+  .notice { background: var(--rose-light); border: 1px solid #F9C8D4; border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--rose-dark); line-height: 1.7; display: flex; gap: 10px; align-items: flex-start; }
+
+  .submit { width: 100%; padding: 16px; background: var(--rose); color: #fff; border: none; border-radius: 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px 20px rgba(232,73,106,0.35); letter-spacing: 0.02em; }
+  .submit:hover { background: var(--rose-dark); transform: translateY(-1px); }
+  .submit:active { transform: translateY(0); }
+  .submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .submit.post-submit { background: var(--rose-dark); box-shadow: 0 6px 20px rgba(139,26,53,0.35); }
+
+  .success { display: none; text-align: center; padding: 3rem 2rem; background: var(--white); border-radius: 24px; border: 1px solid var(--border); }
+  .success-icon { font-size: 64px; margin-bottom: 1rem; }
+  .success-title { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 600; color: var(--ink); margin-bottom: 12px; }
+  .success-desc { font-size: 15px; color: var(--muted); line-height: 1.8; }
+
+  .sending { display: none; text-align: center; padding: 1.5rem; color: var(--muted); font-size: 14px; }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 480px) {
+    .page { padding: 1.25rem 1rem 3rem; }
+    .card-body { padding: 1.25rem; }
+    .card-hero { padding: 1.5rem 1.25rem 1.5rem; }
+    .nps-btn { width: 38px; height: 38px; font-size: 13px; }
+    .slider-row { grid-template-columns: 90px 1fr 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="brand">
+    <div class="brand-heart">♥</div>
+    <div class="brand-name">Heart Village</div>
+    <div class="brand-sub">하트빌리지 온기회복 30일 입주방 1기</div>
+  </div>
+
+  <div class="tab-wrap">
+    <button class="tab on" onclick="switchTab('pre')">입주 전 사전 체크</button>
+    <button class="tab" onclick="switchTab('post')">30일 후 사후 체크</button>
+  </div>
+
+  <!-- ══ 사전 설문 ══ -->
+  <div id="tab-pre">
+    <div class="card" id="form-pre">
+      <div class="card-hero">
+        <div class="hero-badge">입주 전 체크 · 1:1 비공개</div>
+        <div class="hero-title">온기방 입주 전<br>내 몸 상태 체크</div>
+        <div class="hero-desc">주민님의 몸 흐름을 더 안전하게 봐드리기 위한 기록이에요.<br>이 내용은 톡방에 공개되지 않아요 💗</div>
+      </div>
+      <div class="card-body">
+
+        <div>
+          <div class="sec-label">기본 정보</div>
+          <div class="q">
+            <div class="q-num">01</div>
+            <div class="q-text">성함</div>
+            <input type="text" id="pre-name" placeholder="홍길동">
+          </div>
+          <div class="q">
+            <div class="q-num">02</div>
+            <div class="q-text">참여 프로그램</div>
+            <div class="chips" id="prog">
+              <div class="chip" onclick="pick(this,'prog')">6DAY × 3회 (18일)</div>
+              <div class="chip" onclick="pick(this,'prog')">6DAY × 5회 (30일)</div>
+              <div class="chip" onclick="pick(this,'prog')">기타</div>
+            </div>
+          </div>
+          <div class="q">
+            <div class="q-num">03</div>
+            <div class="q-text">시작 예정일</div>
+            <input type="date" id="pre-date" value="2026-05-13">
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">몸 상태 기준점</div>
+          <div class="q">
+            <div class="q-num">04</div>
+            <div class="q-text">현재 체중</div>
+            <div class="q-hint">시작 전 아침 기상 직후 측정값이에요</div>
+            <input type="number" id="pre-weight" placeholder="00.0 kg" step="0.1">
+          </div>
+          <div class="q">
+            <div class="q-num">05</div>
+            <div class="q-text">기대하는 변화</div>
+            <div class="q-hint">체중 목표가 아니어도 좋아요. 몸 느낌, 피부, 피로감 — 뭐든요!</div>
+            <textarea id="pre-expect" placeholder="예) 아침에 몸이 가벼워졌으면 해요"></textarea>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">지금 내 몸 신호 (0=매우 안 좋음 / 5=매우 좋음)</div>
+          <div class="sliders">
+            <div class="slider-row"><div class="slider-name">붓기</div><input type="range" id="pre-s1" min="0" max="5" value="2" step="1" oninput="sv(this)"><div class="slider-val">2</div></div>
+            <div class="slider-row"><div class="slider-name">속/더부룩함</div><input type="range" id="pre-s2" min="0" max="5" value="2" step="1" oninput="sv(this)"><div class="slider-val">2</div></div>
+            <div class="slider-row"><div class="slider-name">피로감</div><input type="range" id="pre-s3" min="0" max="5" value="2" step="1" oninput="sv(this)"><div class="slider-val">2</div></div>
+            <div class="slider-row"><div class="slider-name">수면 만족</div><input type="range" id="pre-s4" min="0" max="5" value="2" step="1" oninput="sv(this)"><div class="slider-val">2</div></div>
+            <div class="slider-row"><div class="slider-name">몸의 가벼움</div><input type="range" id="pre-s5" min="0" max="5" value="2" step="1" oninput="sv(this)"><div class="slider-val">2</div></div>
+            <div class="slider-row"><div class="slider-name">얼굴빛</div><input type="range" id="pre-s6" min="0" max="5" value="2" step="1" oninput="sv(this)"><div class="slider-val">2</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">요즘 제일 불편한 몸 상태 (복수 선택)</div>
+          <div class="chips" id="sym">
+            <div class="chip" onclick="multi(this)">붓기</div>
+            <div class="chip" onclick="multi(this)">피로</div>
+            <div class="chip" onclick="multi(this)">변비</div>
+            <div class="chip" onclick="multi(this)">설사</div>
+            <div class="chip" onclick="multi(this)">더부룩함</div>
+            <div class="chip" onclick="multi(this)">속쓰림</div>
+            <div class="chip" onclick="multi(this)">냉기</div>
+            <div class="chip" onclick="multi(this)">식욕 이상</div>
+            <div class="chip" onclick="multi(this)">수면 불량</div>
+            <div class="chip" onclick="multi(this)">얼굴빛 칙칙</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">변 상태</div>
+          <div class="radios" id="stool">
+            <div class="radio-opt" onclick="radio(this,'stool')"><div class="radio-dot"><div class="radio-dot-in"></div></div>매일 봄</div>
+            <div class="radio-opt" onclick="radio(this,'stool')"><div class="radio-dot"><div class="radio-dot-in"></div></div>며칠에 한 번</div>
+            <div class="radio-opt" onclick="radio(this,'stool')"><div class="radio-dot"><div class="radio-dot-in"></div></div>묽음</div>
+            <div class="radio-opt" onclick="radio(this,'stool')"><div class="radio-dot"><div class="radio-dot-in"></div></div>딱딱함 / 시원하지 않음</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">건강 참고 사항</div>
+          <div class="q">
+            <div class="q-num">06</div>
+            <div class="q-text">복용 중인 약이나 주의할 점 (복수 선택)</div>
+            <div class="chips" id="med">
+              <div class="chip" onclick="multi(this)">없음</div>
+              <div class="chip" onclick="multi(this)">혈압약</div>
+              <div class="chip" onclick="multi(this)">당뇨약</div>
+              <div class="chip" onclick="multi(this)">위장 예민</div>
+              <div class="chip" onclick="multi(this)">갑상선</div>
+              <div class="chip" onclick="multi(this)">임신·수유</div>
+              <div class="chip" onclick="multi(this)">기타</div>
+            </div>
+          </div>
+          <div class="q">
+            <div class="q-num">07</div>
+            <div class="q-text">4~6일차에 외식·모임 일정이 있나요?</div>
+            <div class="radios" id="event">
+              <div class="radio-opt" onclick="radio(this,'event')"><div class="radio-dot"><div class="radio-dot-in"></div></div>없어요</div>
+              <div class="radio-opt" onclick="radio(this,'event')"><div class="radio-dot"><div class="radio-dot-in"></div></div>있어요</div>
+            </div>
+            <textarea id="pre-event-detail" placeholder="예) 5/16 가족 외식 예정" style="margin-top:8px;"></textarea>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">온기방에서 바라는 것</div>
+          <div class="q">
+            <div class="q-num">08</div>
+            <div class="q-text">30일 동안 제일 기대하는 변화 한 가지</div>
+            <textarea id="pre-hope" placeholder="솔직하게 적어주세요. 작은 기대도 소중해요 💗"></textarea>
+          </div>
+          <div class="q">
+            <div class="q-num">09</div>
+            <div class="q-text">힘들 때 어떤 응원이 도움이 되나요?</div>
+            <div class="chips" id="cheer">
+              <div class="chip" onclick="pick(this,'cheer')">조용히 응원해줘요</div>
+              <div class="chip" onclick="pick(this,'cheer')">한마디 격려 말씀</div>
+              <div class="chip" onclick="pick(this,'cheer')">이유 설명해줘요</div>
+              <div class="chip" onclick="pick(this,'cheer')">그냥 같이 있어줘요</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="notice">
+          <span>🔒</span>
+          <div>이 내용은 촌장(사랑대표)만 확인하며, 주민님 몸을 더 잘 봐드리기 위한 목적으로만 사용됩니다.</div>
+        </div>
+
+        <div class="sending" id="sending-pre">💗 제출 중이에요, 잠깐만요...</div>
+        <button class="submit" onclick="submitPre()">입주 전 체크 제출하기 💗</button>
+      </div>
+    </div>
+    <div class="success" id="success-pre">
+      <div class="success-icon">💗</div>
+      <div class="success-title">입주 전 체크 완료!</div>
+      <div class="success-desc">주민님의 몸 이야기를 잘 받았어요.<br>5월 13일 온기방에서 함께 시작해요 💗<br><br>궁금한 게 있으시면 촌장에게 편하게 말씀해주세요!</div>
+    </div>
+  </div>
+
+  <!-- ══ 사후 설문 ══ -->
+  <div id="tab-post" class="hidden">
+    <div class="card" id="form-post">
+      <div class="card-hero post-hero">
+        <div class="hero-badge">30일 후 성과 기록 · 입소문 문장 채굴</div>
+        <div class="hero-title">30일 온기방 여정<br>마무리 체크</div>
+        <div class="hero-desc">주민님이 경험한 변화를 기록으로 남겨주세요.<br>이 이야기가 다음 주민을 이끄는 빛이 됩니다 💗</div>
+      </div>
+      <div class="card-body">
+
+        <div>
+          <div class="sec-label">변화 기록</div>
+          <div class="q">
+            <div class="q-num">01</div>
+            <div class="q-text">성함</div>
+            <input type="text" id="post-name" placeholder="홍길동">
+          </div>
+          <div class="q">
+            <div class="q-num">02</div>
+            <div class="q-text">현재 체중</div>
+            <div class="q-hint">오늘 아침 기상 직후 측정값이에요</div>
+            <input type="number" id="post-weight" placeholder="00.0 kg" step="0.1">
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">몸 신호 재측정 (0=매우 안 좋음 / 5=매우 좋음)</div>
+          <div class="q-hint" style="margin-bottom:14px;">시작 전과 똑같은 항목이에요. 지금 솔직한 상태로 체크해주세요.</div>
+          <div class="sliders">
+            <div class="slider-row"><div class="slider-name">붓기</div><input type="range" id="post-s1" min="0" max="5" value="3" step="1" oninput="sv(this)"><div class="slider-val">3</div></div>
+            <div class="slider-row"><div class="slider-name">속/더부룩함</div><input type="range" id="post-s2" min="0" max="5" value="3" step="1" oninput="sv(this)"><div class="slider-val">3</div></div>
+            <div class="slider-row"><div class="slider-name">피로감</div><input type="range" id="post-s3" min="0" max="5" value="3" step="1" oninput="sv(this)"><div class="slider-val">3</div></div>
+            <div class="slider-row"><div class="slider-name">수면 만족</div><input type="range" id="post-s4" min="0" max="5" value="3" step="1" oninput="sv(this)"><div class="slider-val">3</div></div>
+            <div class="slider-row"><div class="slider-name">몸의 가벼움</div><input type="range" id="post-s5" min="0" max="5" value="3" step="1" oninput="sv(this)"><div class="slider-val">3</div></div>
+            <div class="slider-row"><div class="slider-name">얼굴빛</div><input type="range" id="post-s6" min="0" max="5" value="3" step="1" oninput="sv(this)"><div class="slider-val">3</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">가장 변화가 컸던 것 (복수 선택)</div>
+          <div class="chips" id="changed">
+            <div class="chip" onclick="multi(this)">붓기</div>
+            <div class="chip" onclick="multi(this)">속 편안함</div>
+            <div class="chip" onclick="multi(this)">변 상태</div>
+            <div class="chip" onclick="multi(this)">피로</div>
+            <div class="chip" onclick="multi(this)">수면</div>
+            <div class="chip" onclick="multi(this)">얼굴빛</div>
+            <div class="chip" onclick="multi(this)">몸의 가벼움</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">고객 언어 채굴 💗</div>
+          <div class="q">
+            <div class="q-num">03</div>
+            <div class="q-text">30일 동안 가장 달라진 몸 느낌은?</div>
+            <textarea id="post-feel" placeholder="예) 아침에 일어날 때 몸이 확 달라진 걸 느끼게 됐어요"></textarea>
+          </div>
+          <div class="q">
+            <div class="q-num">04</div>
+            <div class="q-text">하트빌리지 방식이 기존 다이어트와 달랐던 점</div>
+            <textarea id="post-diff" placeholder="예) 굶는 게 아니라 내 몸이 왜 이런지 알게 해줬어요"></textarea>
+          </div>
+          <div class="q">
+            <div class="q-num">05</div>
+            <div class="q-text">혼자 했다면 어려웠을 것 같은 부분</div>
+            <textarea id="post-alone" placeholder="예) 반응이 왔을 때 포기했을 것 같아요"></textarea>
+          </div>
+          <div class="q">
+            <div class="q-num">06</div>
+            <div class="q-text">주변에 소개한다면 어떻게 말하고 싶으세요?</div>
+            <div class="q-hint emphasis">✨ 이 답변이 하트빌리지 입소문 문장이 됩니다</div>
+            <textarea id="post-referral-word" placeholder="예) 몸이 왜 안 빠지는지 이유를 알고 싶으면 여기 가봐"></textarea>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">변 상태 (30일 후)</div>
+          <div class="radios" id="stool2">
+            <div class="radio-opt" onclick="radio(this,'stool2')"><div class="radio-dot"><div class="radio-dot-in"></div></div>매일 봄 (좋아졌어요)</div>
+            <div class="radio-opt" onclick="radio(this,'stool2')"><div class="radio-dot"><div class="radio-dot-in"></div></div>비슷해요</div>
+            <div class="radio-opt" onclick="radio(this,'stool2')"><div class="radio-dot"><div class="radio-dot-in"></div></div>며칠에 한 번</div>
+            <div class="radio-opt" onclick="radio(this,'stool2')"><div class="radio-dot"><div class="radio-dot-in"></div></div>묽음 / 딱딱함</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">추천 · 재참여</div>
+          <div class="q">
+            <div class="q-num">07</div>
+            <div class="q-text">주변에 소개하고 싶은 분이 있나요?</div>
+            <div class="radios" id="ref">
+              <div class="radio-opt" onclick="radio(this,'ref')"><div class="radio-dot"><div class="radio-dot-in"></div></div>네, 있어요</div>
+              <div class="radio-opt" onclick="radio(this,'ref')"><div class="radio-dot"><div class="radio-dot-in"></div></div>생각해볼게요</div>
+              <div class="radio-opt" onclick="radio(this,'ref')"><div class="radio-dot"><div class="radio-dot-in"></div></div>없어요</div>
+            </div>
+          </div>
+          <div class="q">
+            <div class="q-num">08</div>
+            <div class="q-text">다음 회차 참여 의향</div>
+            <div class="radios" id="renew">
+              <div class="radio-opt" onclick="radio(this,'renew')"><div class="radio-dot"><div class="radio-dot-in"></div></div>바로 하고 싶어요</div>
+              <div class="radio-opt" onclick="radio(this,'renew')"><div class="radio-dot"><div class="radio-dot-in"></div></div>잠깐 쉬고 싶어요</div>
+              <div class="radio-opt" onclick="radio(this,'renew')"><div class="radio-dot"><div class="radio-dot-in"></div></div>아직 모르겠어요</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-label">전체 만족도</div>
+          <div class="nps-wrap">
+            <div class="nps-row" id="nps">
+              <div class="nps-btn" onclick="nps(this)">1</div><div class="nps-btn" onclick="nps(this)">2</div>
+              <div class="nps-btn" onclick="nps(this)">3</div><div class="nps-btn" onclick="nps(this)">4</div>
+              <div class="nps-btn" onclick="nps(this)">5</div><div class="nps-btn" onclick="nps(this)">6</div>
+              <div class="nps-btn" onclick="nps(this)">7</div><div class="nps-btn" onclick="nps(this)">8</div>
+              <div class="nps-btn" onclick="nps(this)">9</div><div class="nps-btn" onclick="nps(this)">10</div>
+            </div>
+            <div class="nps-labels"><span>전혀 만족 못함</span><span>매우 만족</span></div>
+          </div>
+        </div>
+
+        <div class="sending" id="sending-post">💗 제출 중이에요, 잠깐만요...</div>
+        <button class="submit post-submit" onclick="submitPost()">30일 여정 기록 제출하기 💗</button>
+      </div>
+    </div>
+    <div class="success" id="success-post">
+      <div class="success-icon">🌸</div>
+      <div class="success-title">30일 완주 정말 고생하셨어요!</div>
+      <div class="success-desc">주민님의 소중한 기록 잘 받았어요.<br>이 변화가 다음 주민의 용기가 됩니다 💗<br><br>촌장이 곧 연락드릴게요!</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ★★★ 여기에 Apps Script 배포 URL 붙여넣기 ★★★
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqTL3K3JSih-Y_V_UJNQGmcSgPLWRADUrHsT2TSfxScxkhE7buBuXai8IGB6UR8FbC/exec';
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach((b,i) => b.classList.toggle('on', (t==='pre'&&i===0)||(t==='post'&&i===1)));
+  document.getElementById('tab-pre').classList.toggle('hidden', t!=='pre');
+  document.getElementById('tab-post').classList.toggle('hidden', t!=='post');
+}
+function pick(el, gid) {
+  document.getElementById(gid).querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+function multi(el) { el.classList.toggle('on'); }
+function radio(el, gid) {
+  document.getElementById(gid).querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('on'));
+  el.classList.add('on');
+}
+function sv(input) { input.nextElementSibling.textContent = input.value; }
+function nps(el) {
+  document.querySelectorAll('#nps .nps-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+function getChips(id) {
+  return [...document.getElementById(id).querySelectorAll('.chip.on')].map(c=>c.textContent);
+}
+function getRadio(id) {
+  const el = document.getElementById(id).querySelector('.radio-opt.on');
+  return el ? el.textContent.trim() : '';
+}
+
+async function send(data, which) {
+  const btn = document.querySelector(`#tab-${which} .submit`);
+  const sending = document.getElementById(`sending-${which}`);
+  btn.disabled = true;
+  sending.style.display = 'block';
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    document.getElementById(`form-${which}`).style.display = 'none';
+    document.getElementById(`success-${which}`).style.display = 'block';
+  } catch(e) {
+    alert('제출 중 오류가 발생했어요. 다시 시도해주세요 💗');
+    btn.disabled = false;
+    sending.style.display = 'none';
+  }
+}
+
+function submitPre() {
+  const name = document.getElementById('pre-name').value.trim();
+  if (!name) { alert('성함을 입력해주세요 💗'); return; }
+  send({
+    type: 'pre',
+    name,
+    program:     getChips('prog').join(''),
+    startDate:   document.getElementById('pre-date').value,
+    weight:      document.getElementById('pre-weight').value,
+    expectation: document.getElementById('pre-expect').value,
+    score_붓기:  document.getElementById('pre-s1').value,
+    score_속:    document.getElementById('pre-s2').value,
+    score_피로:  document.getElementById('pre-s3').value,
+    score_수면:  document.getElementById('pre-s4').value,
+    score_가벼움: document.getElementById('pre-s5').value,
+    score_얼굴빛: document.getElementById('pre-s6').value,
+    symptoms:    getChips('sym'),
+    stool:       getRadio('stool'),
+    meds:        getChips('med'),
+    hasEvent:    getRadio('event'),
+    eventDetail: document.getElementById('pre-event-detail').value,
+    hope:        document.getElementById('pre-hope').value,
+    cheer:       getChips('cheer').join(''),
+  }, 'pre');
+}
+
+function submitPost() {
+  const name = document.getElementById('post-name').value.trim();
+  if (!name) { alert('성함을 입력해주세요 💗'); return; }
+  const npsEl = document.querySelector('#nps .nps-btn.on');
+  send({
+    type: 'post',
+    name,
+    weight:       document.getElementById('post-weight').value,
+    score_붓기:   document.getElementById('post-s1').value,
+    score_속:     document.getElementById('post-s2').value,
+    score_피로:   document.getElementById('post-s3').value,
+    score_수면:   document.getElementById('post-s4').value,
+    score_가벼움: document.getElementById('post-s5').value,
+    score_얼굴빛: document.getElementById('post-s6').value,
+    bigChange:    getChips('changed'),
+    bodyFeel:     document.getElementById('post-feel').value,
+    difference:   document.getElementById('post-diff').value,
+    hardAlone:    document.getElementById('post-alone').value,
+    referralWord: document.getElementById('post-referral-word').value,
+    stool:        getRadio('stool2'),
+    referral:     getRadio('ref'),
+    renew:        getRadio('renew'),
+    satisfaction: npsEl ? npsEl.textContent : '',
+  }, 'post');
+}
+</script>
+</body>
+</html>
